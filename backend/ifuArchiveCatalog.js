@@ -66,6 +66,34 @@ const createArchiveDocument = ({ id, filename }) => {
   };
 };
 
+const archiveLanguagePriority = {
+  en: 1,
+  tr: 2,
+  de: 3
+};
+
+const compareArchiveDocuments = (firstDocument, secondDocument) => {
+  const firstYear = Number.parseInt(firstDocument.versionLabel, 10) || 0;
+  const secondYear = Number.parseInt(secondDocument.versionLabel, 10) || 0;
+
+  if (firstYear !== secondYear) {
+    return secondYear - firstYear;
+  }
+
+  const firstLanguagePriority = archiveLanguagePriority[firstDocument.language.code] || 100;
+  const secondLanguagePriority = archiveLanguagePriority[secondDocument.language.code] || 100;
+
+  if (firstLanguagePriority !== secondLanguagePriority) {
+    return firstLanguagePriority - secondLanguagePriority;
+  }
+
+  if (firstDocument.language.code !== secondDocument.language.code) {
+    return firstDocument.language.code.localeCompare(secondDocument.language.code);
+  }
+
+  return firstDocument.filename.localeCompare(secondDocument.filename);
+};
+
 export const ifuArchiveDocuments = [
   createArchiveDocument({
     id: 'archive-2025-ifu-de',
@@ -83,7 +111,7 @@ export const ifuArchiveDocuments = [
     id: 'archive-ta-ifu-eng-25-2',
     filename: 'TA ifu eng 25 - 2.pdf'
   })
-];
+].sort(compareArchiveDocuments);
 
 export const getIfuArchiveDocumentById = (documentId) => (
   ifuArchiveDocuments.find((document) => document.id === documentId)

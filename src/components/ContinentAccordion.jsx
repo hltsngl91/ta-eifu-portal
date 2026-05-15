@@ -20,11 +20,11 @@ const ContinentAccordion = ({ region, countries, onSelectCountry }) => {
     <div className="continent-row-card rounded-[32px] overflow-hidden mb-6 group cursor-pointer">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-8 py-6 flex items-center justify-between transition-colors outline-none"
+        className="continent-header w-full px-8 py-6 flex items-center justify-between transition-colors outline-none"
       >
-        <h3 className="text-2xl font-extrabold text-slate-800 drop-shadow-sm">{t(region)}</h3>
+        <h3 className="continent-title text-2xl font-extrabold text-slate-800 drop-shadow-sm">{t(region)}</h3>
         <div 
-          className="flex items-center gap-3 text-[#1447d7] font-bold px-5 py-2.5 rounded-full transition-all duration-300"
+          className="continent-toggle flex items-center gap-3 text-[#1447d7] font-bold px-5 py-2.5 rounded-full transition-all duration-300"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             border: '1px solid rgba(255,255,255,0.9)',

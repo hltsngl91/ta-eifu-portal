@@ -64,7 +64,7 @@ npm run backend
 Start the frontend on port `5190`:
 
 ```bash
-npm run dev -- --host 127.0.0.1 --port 5190
+npm run dev
 ```
 
 Open:

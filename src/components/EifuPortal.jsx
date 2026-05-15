@@ -420,7 +420,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
           {activeTab === 'Search IFU' ? (
             <>
               {/* Cinematic Hero Card */}
-              <div className="relative rounded-[40px] p-10 md:p-16 overflow-hidden shadow-brand-hover border border-white/10 group">
+              <div className="hero-card relative rounded-[40px] p-10 md:p-16 overflow-hidden shadow-brand-hover border border-white/10 group">
                 {/* Rich sapphire gradient base */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1e56ff] via-[#1447d7] to-[#0a2a85] opacity-95"></div>
                 
@@ -442,15 +442,15 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
               </div>
 
               {/* Neumorphic Search Bar Area */}
-              <div className="-mt-10 mx-6 sm:mx-12 relative z-20">
+              <div className="hero-search -mt-10 mx-6 sm:mx-12 relative z-20">
                 <div className="relative">
-                  <div className="glass-panel relative rounded-[32px] p-4 flex flex-col md:flex-row gap-4 items-center">
-                    <div className="neu-input-wrapper flex-grow">
+                  <div className="search-glass glass-panel relative rounded-[32px] p-4 flex flex-col md:flex-row gap-4 items-center">
+                    <div className="search-wrapper neu-input-wrapper w-full md:flex-grow">
                       <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1447d7]/70" />
                       <input
                         type="text"
                         placeholder={searchPlaceholder}
-                        className="neu-input"
+                        className="search-input neu-input"
                         value={searchQuery}
                         onChange={(e) => {
                           const nextValue = e.target.value;
@@ -481,7 +481,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
                     </div>
                     <button
                       onClick={applySearch}
-                      className="neu-btn-primary px-10 py-5 w-full md:w-auto text-lg flex items-center justify-center gap-3 flex-shrink-0"
+                      className="search-button neu-btn-primary px-10 py-5 w-full md:w-auto text-lg flex items-center justify-center gap-3 flex-shrink-0"
                     >
                       <span>{t('Search')}</span>
                     </button>
