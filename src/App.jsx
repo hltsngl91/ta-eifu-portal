@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CountrySelection from './components/CountrySelection';
 import EifuPortal from './components/EifuPortal';
 import ProfessionalAgreementModal from './components/ProfessionalAgreementModal';
+import PortalFooter from './components/PortalFooter';
 import { TranslationProvider } from './contexts/TranslationContext';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
             />
           </>
         )}
+        <PortalFooter />
       </div>
     </TranslationProvider>
   );
