@@ -12,7 +12,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env'), quiet: true });
-console.log('Gemini key loaded:', Boolean(process.env.GEMINI_API_KEY));
+if (!process.env.GEMINI_API_KEY) {
+  console.warn('GEMINI_API_KEY is not configured. Translation requests will fail until it is set.');
+}
 
 const app = express();
 app.use(cors());
@@ -25,5 +27,5 @@ app.use('/api/ifu', ifuRoutes);
 
 const PORT = process.env.PORT || 5090;
 app.listen(PORT, () => {
-  console.log(`TA EIFU Backend Server running on port ${PORT}`);
+  console.info(`TA EIFU Backend Server running on port ${PORT}`);
 });

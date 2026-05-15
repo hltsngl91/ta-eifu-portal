@@ -32,11 +32,6 @@ export const TranslationProvider = ({ children }) => {
   const [language, setLanguage] = useState(getInitialLanguage);
   const [translations, setTranslations] = useState({});
   const [loading, setLoading] = useState(false);
-  const [debugStatus, setDebugStatus] = useState({
-    backend: 'checking',
-    gemini: 'checking',
-    modelUsed: null,
-  });
 
   const translationsRef = useRef(translations);
 
@@ -49,34 +44,6 @@ export const TranslationProvider = ({ children }) => {
     document.documentElement.dir = RTL_LANGUAGES.has(language) ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);
-
-  const checkTranslationBackend = useCallback(async () => {
-    try {
-      const response = await fetch('/api/translate/test');
-      const data = await response.json().catch(() => ({}));
-
-      setDebugStatus({
-        backend: response.ok ? 'connected' : 'connected',
-        gemini: response.ok && data.ok ? 'working' : 'failed',
-        modelUsed: data.modelUsed || null,
-      });
-
-      if (!response.ok || !data.ok) {
-        console.error('Gemini translation test failed:', data.error || response.statusText);
-      }
-    } catch (error) {
-      setDebugStatus({
-        backend: 'failed',
-        gemini: 'failed',
-        modelUsed: null,
-      });
-      console.error('Translation backend connection failed:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkTranslationBackend();
-  }, [checkTranslationBackend]);
 
   const translateBatch = useCallback(async (texts, options = {}) => {
     const uniqueTexts = [...new Set(
@@ -106,12 +73,6 @@ export const TranslationProvider = ({ children }) => {
       });
       const data = await response.json().catch(() => ({}));
 
-      setDebugStatus((prev) => ({
-        backend: response.ok ? 'connected' : 'connected',
-        gemini: response.ok && data.ok ? 'working' : 'failed',
-        modelUsed: data.modelUsed || prev.modelUsed,
-      }));
-
       if (!response.ok || !data.ok || !data.translations) {
         console.error('Translation API failed:', data.error || response.statusText);
         return;
@@ -125,11 +86,6 @@ export const TranslationProvider = ({ children }) => {
         },
       }));
     } catch (error) {
-      setDebugStatus((prev) => ({
-        ...prev,
-        backend: 'failed',
-        gemini: 'failed',
-      }));
       console.error('Frontend translation error:', error);
     } finally {
       setLoading(false);
@@ -148,8 +104,6 @@ export const TranslationProvider = ({ children }) => {
     translateBatch,
     languages: LANGUAGES,
     loading,
-    debugStatus,
-    refreshTranslationDebug: checkTranslationBackend,
   };
 
   return (

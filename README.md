@@ -1,17 +1,51 @@
 # TA eIFU Portal
 
-TA Dental Implants eIFU portal with a React/Vite frontend, Express backend, MSSQL product database, Gemini-powered UI translation, current IFU files, and IFU archive support.
+Production-ready electronic Instructions for Use (eIFU) portal for TA Dental Implants.
+
+The project includes:
+
+- React + Vite frontend
+- Express backend API
+- Microsoft SQL Server product database
+- Gemini-powered UI translation
+- Country-specific current IFU document selection
+- Archived IFU document listing
+- REF, UDI/GTIN, and product-name search
+
+## Project Structure
+
+```text
+ta-eifu-portal/
+├── backend/                  Express API, MSSQL connection, IFU catalogs
+├── public/                   Static frontend assets served by Vite
+│   ├── archive/              Archived IFU PDFs exposed to the portal
+│   └── label-guides/         REF / UDI label guide images
+├── src/                      React frontend source
+├── archiv/                   Source archive PDFs kept for handover/reference
+├── ref udi/                  Source REF / UDI label images kept for handover/reference
+├── seed.sql                  Base SQL seed
+├── seed_full.sql             Full MSSQL seed for production handoff
+├── package.json              Frontend/root scripts
+└── vite.config.js            Frontend dev server and API proxy config
+```
+
+Generated folders such as `node_modules/` and `dist/` are ignored by Git.
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 18 or newer
 - npm
 - Microsoft SQL Server
+- `sqlcmd` or another SQL Server client
 - Gemini API key
 
 ## Environment
 
-Backend environment variables are loaded from `backend/.env`.
+Backend environment variables are loaded from:
+
+```text
+backend/.env
+```
 
 Create it from the example:
 
@@ -19,29 +53,54 @@ Create it from the example:
 cp backend/.env.example backend/.env
 ```
 
-Required variables:
+Required backend environment variables:
 
 ```env
 PORT=5090
+
 DB_SERVER=127.0.0.1
 DB_PORT=1433
+DB_DATABASE=TA_EIFU_DB
 DB_USER=sa
-DB_PASSWORD=CHANGE_ME
-DB_NAME=TA_EIFU_DB
-GEMINI_API_KEY=PUT_YOUR_GEMINI_API_KEY_HERE
+DB_PASSWORD=YOUR_PASSWORD
+
+GEMINI_API_KEY=YOUR_KEY
 ```
 
-For production frontend deployments where the API is not served from the same host, set this at build time:
+`DB_NAME` is still supported as a legacy fallback, but new deployments should use `DB_DATABASE`.
+
+For production frontend builds where the backend is not available under the same host through `/api`, set this before building:
 
 ```env
-VITE_API_BASE_URL=https://your-api-domain.example
+VITE_API_BASE_URL=https://your-backend-domain.example
 ```
 
 If `VITE_API_BASE_URL` is not set, the frontend uses `http://localhost:5090`.
 
-## Local Development
+## MSSQL Setup
 
-Install frontend dependencies from the project root:
+Create the database in SQL Server:
+
+```sql
+CREATE DATABASE TA_EIFU_DB;
+```
+
+Run the full seed:
+
+```bash
+sqlcmd -S 127.0.0.1,1433 -U sa -P "YOUR_PASSWORD" -d TA_EIFU_DB -i seed_full.sql
+```
+
+If the product taxonomy needs to be refreshed from the source JSON and backend mapping:
+
+```bash
+cd backend
+node seedProducts.js
+```
+
+## Installation
+
+Install root/frontend dependencies:
 
 ```bash
 npm install
@@ -55,7 +114,16 @@ npm install
 cd ..
 ```
 
-Start the backend on port `5090`:
+## Local Development
+
+Start the backend API on port `5090`:
+
+```bash
+cd backend
+npm run dev
+```
+
+Or from the project root:
 
 ```bash
 npm run backend
@@ -70,7 +138,15 @@ npm run dev
 Open:
 
 ```text
-http://127.0.0.1:5190/
+http://localhost:5190/
+```
+
+Useful checks:
+
+```bash
+curl http://localhost:5090/api/translate/test
+curl "http://localhost:5090/api/products?search=2013310A"
+curl "http://localhost:5090/api/products?search=%2BEAMG2013310A1%2F%24"
 ```
 
 ## Build
@@ -81,82 +157,30 @@ Create a production frontend build:
 npm run build
 ```
 
-The build output is written to `dist/`.
+The production output is written to:
 
-Preview the production build locally:
+```text
+dist/
+```
+
+Preview the built frontend locally:
 
 ```bash
 npm run preview
 ```
 
-## Backend
+## Backend Production Run
 
-Run the backend:
-
-```bash
-npm run backend
-```
-
-Health-style checks:
+From the `backend/` directory:
 
 ```bash
-curl http://localhost:5090/api/translate/test
-curl "http://localhost:5090/api/products?search=2013310A"
+npm run start
 ```
 
-The backend reads `backend/.env`, connects to MSSQL, exposes `/api/*` routes, and logs only whether the Gemini key is loaded. Do not commit real `.env` files.
-
-## MSSQL Seed
-
-Create the database first:
-
-```sql
-CREATE DATABASE TA_EIFU_DB;
-```
-
-Run the base SQL seed if needed:
+From the project root:
 
 ```bash
-sqlcmd -S 127.0.0.1,1433 -U sa -P "YOUR_PASSWORD" -d TA_EIFU_DB -i seed.sql
-```
-
-Run the full SQL seed if needed:
-
-```bash
-sqlcmd -S 127.0.0.1,1433 -U sa -P "YOUR_PASSWORD" -d TA_EIFU_DB -i seed_full.sql
-```
-
-To seed or refresh product rows from `src/data/products.json` using the backend taxonomy mapping:
-
-```bash
-cd backend
-node seedProducts.js
-```
-
-## Server Deploy
-
-1. Clone the repository on the server.
-2. Create `backend/.env` from `backend/.env.example`.
-3. Install dependencies:
-
-```bash
-npm install
-cd backend
-npm install
-cd ..
-```
-
-4. Build frontend:
-
-```bash
-npm run build
-```
-
-5. Serve `dist/` with a static web server such as Nginx, Caddy, or a hosting platform.
-6. Run the backend with a process manager:
-
-```bash
-PORT=5090 node backend/server.js
+node backend/server.js
 ```
 
 Recommended process manager example:
@@ -165,27 +189,45 @@ Recommended process manager example:
 pm2 start backend/server.js --name ta-eifu-backend
 ```
 
-7. Proxy `/api` from the public frontend domain to the backend, or build the frontend with `VITE_API_BASE_URL` pointing to the backend URL.
+## Deploy Notes
 
-## Important Files
+1. Clone the repository on the server.
+2. Install root and backend dependencies.
+3. Create `backend/.env` from `backend/.env.example`.
+4. Create `TA_EIFU_DB` in SQL Server.
+5. Run `seed_full.sql`.
+6. Run `npm run build`.
+7. Serve `dist/` with Nginx, Caddy, IIS, or another static host.
+8. Run the backend on port `5090`.
+9. Proxy `/api` from the frontend domain to `http://127.0.0.1:5090`, or build the frontend with `VITE_API_BASE_URL`.
 
-- `backend/server.js` - Express API entrypoint
-- `backend/db.js` - MSSQL connection
-- `backend/routes/products.js` - product, REF, UDI/GTIN search
-- `backend/routes/translate.js` - Gemini translation endpoint
-- `backend/routes/ifu.js` - current and archived IFU documents
-- `backend/ifuCatalog.js` - current IFU mapping
-- `backend/ifuArchiveCatalog.js` - archived IFU mapping
-- `src/components/EifuPortal.jsx` - IFU search UI
-- `src/contexts/TranslationContext.jsx` - frontend translation cache and helpers
+Example Nginx shape:
 
-## Git Hygiene
+```nginx
+location / {
+  try_files $uri /index.html;
+}
+
+location /api/ {
+  proxy_pass http://127.0.0.1:5090/api/;
+}
+```
+
+## Ports
+
+- Frontend dev server: `5190`
+- Backend API: `5090`
+
+`vite.config.js` uses `strictPort: true`, so the frontend will fail instead of silently moving to another port if `5190` is occupied.
+
+## Git and Secrets
 
 The repository ignores:
 
 - `node_modules/`
 - `dist/`
 - `.env`
+- `backend/.env`
 - `.DS_Store`
 
-Commit `backend/.env.example`, but never commit real credentials or API keys.
+Commit `backend/.env.example`, but never commit real `.env` files, database passwords, or Gemini API keys.

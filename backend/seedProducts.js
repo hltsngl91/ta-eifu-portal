@@ -19,7 +19,7 @@ async function seed() {
       END
     `);
     
-    console.log(`Starting to seed ${products.length} products...`);
+    console.info(`Starting to seed ${products.length} products...`);
     
     // Clear existing products
     await pool.request().query('DELETE FROM Products');
@@ -53,10 +53,10 @@ async function seed() {
       });
       
       await request.query(batchQuery);
-      console.log(`Inserted batch ${i / batchSize + 1}`);
+      console.info(`Inserted batch ${i / batchSize + 1}`);
     }
     
-    console.log('Product seeding completed successfully!');
+    console.info('Product seeding completed successfully!');
     process.exit(0);
   } catch (err) {
     console.error('Seeding failed:', err);

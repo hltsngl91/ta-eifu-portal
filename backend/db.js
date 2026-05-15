@@ -8,26 +8,40 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env'), quiet: true });
 
+const databaseName = process.env.DB_DATABASE || process.env.DB_NAME || 'TA_EIFU_DB';
+
 const dbConfig = {
-  user: process.env.DB_USER || 'sa',
-  password: process.env.DB_PASSWORD || 'StrongPass123!',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   server: process.env.DB_SERVER || '127.0.0.1',
   port: Number(process.env.DB_PORT || 1433),
-  database: process.env.DB_NAME || 'TA_EIFU_DB',
+  database: databaseName,
   options: {
     encrypt: false,
     trustServerCertificate: true,
   },
 };
 
+const validateDbConfig = () => {
+  const missingVariables = [];
+  if (!dbConfig.user) missingVariables.push('DB_USER');
+  if (!dbConfig.password) missingVariables.push('DB_PASSWORD');
+  if (!dbConfig.database) missingVariables.push('DB_DATABASE');
+
+  if (missingVariables.length > 0) {
+    throw new Error(`Missing required database environment variables: ${missingVariables.join(', ')}`);
+  }
+};
+
 let activePoolPromise = null;
 
 const getPool = () => {
   if (!activePoolPromise) {
+    validateDbConfig();
     activePoolPromise = new sql.ConnectionPool(dbConfig)
       .connect()
       .then((pool) => {
-        console.log('Connected to MSSQL - TA_EIFU_DB');
+        console.info(`Connected to MSSQL - ${databaseName}`);
         return pool;
       })
       .catch((err) => {
