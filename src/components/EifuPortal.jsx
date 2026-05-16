@@ -715,6 +715,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
                                 </a>
                                 <a
                                   href={`${API_BASE_URL}${doc.downloadUrl}`}
+                                  download
                                   className="px-4 py-2 bg-white/55 backdrop-blur-sm hover:bg-white text-slate-500 hover:text-[#1447d7] font-bold text-sm rounded-full transition-all duration-300 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md border border-white/70 hover:border-[#1447d7]/20"
                                 >
                                   {t('Download PDF')}
@@ -818,6 +819,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
                           </a>
                           <a
                             href={`${API_BASE_URL}${document.downloadUrl}`}
+                            download
                             className="px-4 py-2 bg-white/55 backdrop-blur-sm hover:bg-white text-slate-500 hover:text-[#1447d7] font-bold text-sm rounded-full transition-all duration-300 flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md border border-white/70 hover:border-[#1447d7]/20"
                           >
                             {t('Download PDF')}

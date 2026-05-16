@@ -61,8 +61,8 @@ const createArchiveDocument = ({ id, filename }) => {
     superseded: true,
     filePath: path.join(archiveRoot, filename),
     publicPath: `/archive/${encodeURIComponent(filename)}`,
-    viewUrl: `/api/ifu/archive/files/${id}`,
-    downloadUrl: `/api/ifu/archive/files/${id}?download=1`
+    viewUrl: `/archive/${encodeURIComponent(filename)}`,
+    downloadUrl: `/archive/${encodeURIComponent(filename)}`
   };
 };
 

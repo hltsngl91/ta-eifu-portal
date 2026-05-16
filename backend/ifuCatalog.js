@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 
+const publicIfuPath = (filename) => `/ifu/${encodeURIComponent(filename)}`;
+
 export const ifuLanguages = [
   {
     code: 'en',
@@ -63,7 +65,9 @@ export const ifuFiles = [
     id: 'ta-general-en-01-26',
     productRef: '*',
     languageCode: 'en',
-    filePath: path.join(projectRoot, 'IFU TA EN 01-26.pdf'),
+    filename: 'IFU TA EN 01-26.pdf',
+    filePath: path.join(projectRoot, 'public', 'ifu', 'IFU TA EN 01-26.pdf'),
+    publicPath: publicIfuPath('IFU TA EN 01-26.pdf'),
     version: '01-26',
     validFrom: '2026-01-01',
     countryCodes: null,
@@ -73,7 +77,9 @@ export const ifuFiles = [
     id: 'ta-general-tr-01-26',
     productRef: '*',
     languageCode: 'tr',
-    filePath: path.join(projectRoot, 'IFU TA TR 01-26.pdf'),
+    filename: 'IFU TA TR 01-26.pdf',
+    filePath: path.join(projectRoot, 'public', 'ifu', 'IFU TA TR 01-26.pdf'),
+    publicPath: publicIfuPath('IFU TA TR 01-26.pdf'),
     version: '01-26',
     validFrom: '2026-01-01',
     countryCodes: ['TR'],
@@ -133,8 +139,8 @@ export const getAvailableIfuDocuments = ({ productRef, countryCode }) => {
         version: file.version,
         validFrom: file.validFrom,
         isFallback: Boolean(file.isFallback),
-        viewUrl: `/api/ifu/files/${file.id}`,
-        downloadUrl: `/api/ifu/files/${file.id}?download=1`
+        viewUrl: file.publicPath,
+        downloadUrl: file.publicPath
       };
     })
     .filter(Boolean);

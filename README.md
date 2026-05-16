@@ -257,6 +257,44 @@ location /api/ {
 }
 ```
 
+## Vercel Deploy
+
+The project is Vercel-ready:
+
+- `vercel.json` builds the Vite frontend into `dist/`.
+- `api/[...path].js` exposes the Express backend routes as Vercel serverless functions.
+- Frontend API calls use same-origin `/api` by default.
+- Current and archived IFU PDFs are served from `public/`.
+
+To deploy on Vercel:
+
+1. Push this repository to GitHub.
+2. In Vercel, choose `Add New Project`.
+3. Import `hltsngl91/ta-eifu-portal`.
+4. Use the default framework detection or set:
+
+```text
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+```
+
+5. Add these environment variables in Vercel Project Settings:
+
+```env
+DB_SERVER=YOUR_SQL_SERVER_HOST
+DB_PORT=1433
+DB_DATABASE=TA_EIFU_DB
+DB_USER=YOUR_DB_USER
+DB_PASSWORD=YOUR_DB_PASSWORD
+GEMINI_API_KEY=YOUR_GEMINI_KEY
+```
+
+6. Deploy.
+
+Important: the MSSQL server must be reachable from Vercel serverless functions. For production, use a cloud SQL Server or allow Vercel outbound access to the database host.
+
 ## Ports
 
 - Frontend dev server: `5190`

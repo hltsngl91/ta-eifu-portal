@@ -12,7 +12,10 @@
     "backend": "node backend/server.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.16.1",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "lucide-react": "^0.378.0",
     "mssql": "^12.5.2",
