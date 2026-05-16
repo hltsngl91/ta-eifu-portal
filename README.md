@@ -69,13 +69,21 @@ GEMINI_API_KEY=YOUR_KEY
 
 `DB_NAME` is still supported as a legacy fallback, but new deployments should use `DB_DATABASE`.
 
-For production frontend builds where the backend is not available under the same host through `/api`, set this before building:
+By default, the frontend calls the backend through relative `/api` URLs. This is the recommended production setup for a subdomain such as:
+
+```text
+https://eifu.your-domain.com
+```
+
+In that setup no public port is required in the browser URL. A reverse proxy or hosting platform can forward traffic to the internal Node.js process.
+
+For split deployments where the backend is on a different domain, set this before building:
 
 ```env
 VITE_API_BASE_URL=https://your-backend-domain.example
 ```
 
-If `VITE_API_BASE_URL` is not set, the frontend uses `http://localhost:5090`.
+If `VITE_API_BASE_URL` is not set, the frontend uses same-origin `/api` requests.
 
 ## MSSQL Setup
 
@@ -163,6 +171,8 @@ The production output is written to:
 dist/
 ```
 
+The backend can serve this `dist/` folder directly after the build.
+
 Preview the built frontend locally:
 
 ```bash
@@ -170,6 +180,12 @@ npm run preview
 ```
 
 ## Backend Production Run
+
+Build the frontend first:
+
+```bash
+npm run build
+```
 
 From the `backend/` directory:
 
@@ -180,7 +196,13 @@ npm run start
 From the project root:
 
 ```bash
-node backend/server.js
+npm run start
+```
+
+Build and start in one command:
+
+```bash
+npm run serve
 ```
 
 Recommended process manager example:
@@ -191,17 +213,39 @@ pm2 start backend/server.js --name ta-eifu-backend
 
 ## Deploy Notes
 
-1. Clone the repository on the server.
-2. Install root and backend dependencies.
-3. Create `backend/.env` from `backend/.env.example`.
-4. Create `TA_EIFU_DB` in SQL Server.
-5. Run `seed_full.sql`.
-6. Run `npm run build`.
-7. Serve `dist/` with Nginx, Caddy, IIS, or another static host.
-8. Run the backend on port `5090`.
-9. Proxy `/api` from the frontend domain to `http://127.0.0.1:5090`, or build the frontend with `VITE_API_BASE_URL`.
+1. Point the subdomain DNS record to the server.
+2. Clone the repository on the server.
+3. Install root and backend dependencies.
+4. Create `backend/.env` from `backend/.env.example`.
+5. Create `TA_EIFU_DB` in SQL Server.
+6. Run `seed_full.sql`.
+7. Run `npm run build`.
+8. Run the backend with `npm run start` or a process manager.
+9. Configure the reverse proxy to forward the subdomain to the internal Node.js port.
+
+The Express backend serves both:
+
+- `/api/*` backend routes
+- the built React app from `dist/`
 
 Example Nginx shape:
+
+```nginx
+server {
+  server_name eifu.your-domain.com;
+
+  location / {
+    proxy_pass http://127.0.0.1:5090;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}
+```
+
+Alternative static-host shape if you want Nginx to serve `dist/` itself:
 
 ```nginx
 location / {
@@ -216,7 +260,13 @@ location /api/ {
 ## Ports
 
 - Frontend dev server: `5190`
-- Backend API: `5090`
+- Backend API/local production server: `5090` by default, or the platform-provided `PORT`
+
+Production users should access the project through the subdomain without typing a port:
+
+```text
+https://eifu.your-domain.com
+```
 
 `vite.config.js` uses `strictPort: true`, so the frontend will fail instead of silently moving to another port if `5190` is occupied.
 

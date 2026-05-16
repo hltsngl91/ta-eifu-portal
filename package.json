@@ -7,6 +7,8 @@
     "dev": "vite --host 0.0.0.0 --port 5190",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "node backend/server.js",
+    "serve": "npm run build && node backend/server.js",
     "backend": "node backend/server.js"
   },
   "dependencies": {

@@ -5,7 +5,7 @@ import AboutModal from './AboutModal';
 import LabelGuideModal from './LabelGuideModal';
 import { useTranslation } from '../contexts/TranslationContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5090';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const extractRefFromUdi = (value = '') => {
   const source = String(value).trim();

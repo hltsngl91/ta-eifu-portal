@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import countryRoutes from './routes/countries.js';
@@ -24,6 +25,18 @@ app.use('/api/countries', countryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/translate', translateRoutes);
 app.use('/api/ifu', ifuRoutes);
+
+const distPath = path.join(__dirname, '..', 'dist');
+const indexPath = path.join(distPath, 'index.html');
+
+if (fs.existsSync(indexPath)) {
+  app.use(express.static(distPath));
+  app.get(/^(?!\/api).*/, (_req, res) => {
+    res.sendFile(indexPath);
+  });
+} else if (process.env.NODE_ENV === 'production') {
+  console.warn('Production frontend build was not found. Run npm run build before starting the server.');
+}
 
 const PORT = process.env.PORT || 5090;
 app.listen(PORT, () => {
