@@ -1,7 +1,52 @@
 import express from 'express';
+import worldCountries from 'world-countries';
 import { poolPromise } from '../db.js';
 
 const router = express.Router();
+
+const continentOrder = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
+
+const regionForCountry = (country) => {
+  if (country.region === 'Americas') {
+    return country.subregion === 'South America' ? 'South America' : 'North America';
+  }
+
+  return country.region || 'Other';
+};
+
+const getFallbackCountries = () => {
+  const groupedCountries = {};
+
+  worldCountries
+    .filter((country) => country.cca2 && country.name?.common)
+    .forEach((country, index) => {
+      const region = regionForCountry(country);
+      if (!groupedCountries[region]) groupedCountries[region] = [];
+
+      groupedCountries[region].push({
+        id: index + 1,
+        name: country.name.common,
+        flag: country.flag || '',
+        isoCode: country.cca2
+      });
+    });
+
+  return Object.fromEntries(
+    Object.entries(groupedCountries)
+      .sort(([firstRegion], [secondRegion]) => {
+        const firstIndex = continentOrder.indexOf(firstRegion);
+        const secondIndex = continentOrder.indexOf(secondRegion);
+        if (firstIndex !== -1 || secondIndex !== -1) {
+          return (firstIndex === -1 ? 999 : firstIndex) - (secondIndex === -1 ? 999 : secondIndex);
+        }
+        return firstRegion.localeCompare(secondRegion);
+      })
+      .map(([region, countries]) => [
+        region,
+        countries.sort((first, second) => first.name.localeCompare(second.name))
+      ])
+  );
+};
 
 router.get('/', async (req, res) => {
   try {
@@ -34,7 +79,7 @@ router.get('/', async (req, res) => {
 
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.json(getFallbackCountries());
   }
 });
 
