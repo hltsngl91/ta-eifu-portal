@@ -9,18 +9,31 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env'), quiet: true });
 
 const databaseName = process.env.DB_DATABASE || process.env.DB_NAME || 'TA_EIFU_DB';
+const databaseServer = process.env.DB_SERVER || '127.0.0.1';
+const databasePort = Number(process.env.DB_PORT || 1433);
 
 const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER || '127.0.0.1',
-  port: Number(process.env.DB_PORT || 1433),
+  server: databaseServer,
+  port: databasePort,
   database: databaseName,
   options: {
     encrypt: false,
     trustServerCertificate: true,
   },
 };
+
+console.info(
+  [
+    'MSSQL env check:',
+    `DB_SERVER=${databaseServer}`,
+    `DB_PORT=${databasePort}`,
+    `DB_DATABASE=${databaseName}`,
+    `DB_USER=${dbConfig.user || 'missing'}`,
+    `DB_PASSWORD=${dbConfig.password ? 'loaded' : 'missing'}`
+  ].join(' ')
+);
 
 const validateDbConfig = () => {
   const missingVariables = [];

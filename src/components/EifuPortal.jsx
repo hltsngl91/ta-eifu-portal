@@ -7,6 +7,12 @@ import { useTranslation } from '../contexts/TranslationContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+const readListPayload = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
 const extractRefFromUdi = (value = '') => {
   const source = String(value).trim();
   const match = source.match(/\+EAMG([A-Z0-9]+?)1\/\$/i)
@@ -102,7 +108,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products/categories`)
       .then(res => res.json())
-      .then(data => setCategories(data))
+      .then(data => setCategories(readListPayload(data)))
       .catch(err => console.error('Failed to load categories:', err));
   }, []);
 
@@ -121,7 +127,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
     fetch(`${API_BASE_URL}/api/products/subcategories?${params.toString()}`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
-        setSubcategories(Array.isArray(data) ? data : []);
+        setSubcategories(readListPayload(data));
       })
       .catch(err => {
         if (err.name !== 'AbortError') {
@@ -144,7 +150,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
     fetch(`${API_BASE_URL}/api/products?${params.toString()}`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
-        const nextProducts = Array.isArray(data) ? data : [];
+        const nextProducts = readListPayload(data);
         setProducts(nextProducts);
         setSelectedProduct((currentProduct) => {
           if (currentProduct !== 'default' && !nextProducts.some(product => product.Id.toString() === currentProduct)) return 'default';
@@ -207,7 +213,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
       fetch(liveSearchUrl, { signal: controller.signal })
         .then(res => res.json())
         .then(data => {
-          const nextResults = Array.isArray(data) ? data : [];
+          const nextResults = readListPayload(data);
           const exactRefMatch = nextResults.length === 1
             && nextResults[0].Ref?.toLowerCase() === effectiveSearch.toLowerCase();
 

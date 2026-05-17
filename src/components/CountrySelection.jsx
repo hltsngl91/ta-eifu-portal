@@ -22,7 +22,8 @@ const CountrySelection = ({ onSelectCountry }) => {
     fetch('/api/countries')
       .then(res => res.json())
       .then(data => {
-        setCountryData(data);
+        const nextCountryData = data?.data && typeof data.data === 'object' ? data.data : data;
+        setCountryData(nextCountryData);
         setLoading(false);
       })
       .catch(err => {

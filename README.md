@@ -295,6 +295,17 @@ GEMINI_API_KEY=YOUR_GEMINI_KEY
 
 Important: the MSSQL server must be reachable from Vercel serverless functions. For production, use a cloud SQL Server or allow Vercel outbound access to the database host.
 
+If any Vercel environment variable is added, changed, or removed, trigger a new production redeploy. Existing deployments keep the environment snapshot from the time they were built/deployed.
+
+The backend reads these exact variable names:
+
+- `DB_SERVER`
+- `DB_PORT`
+- `DB_DATABASE`
+- `DB_USER`
+- `DB_PASSWORD`
+- `GEMINI_API_KEY`
+
 ## Ports
 
 - Frontend dev server: `5190`

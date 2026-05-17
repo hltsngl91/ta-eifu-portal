@@ -48,6 +48,18 @@ const getFallbackCountries = () => {
   );
 };
 
+const sendFallbackCountries = (res, err) => {
+  const reason = err?.message || 'Unknown database error';
+  console.warn(`Countries database unavailable; serving fallback data. Reason: ${reason}`);
+  res.setHeader('X-Data-Source', 'fallback');
+  return res.status(200).json({
+    ok: false,
+    source: 'fallback',
+    error: 'Database unavailable; serving fallback country data.',
+    data: getFallbackCountries()
+  });
+};
+
 router.get('/', async (req, res) => {
   try {
     const pool = await poolPromise;
@@ -76,10 +88,10 @@ router.get('/', async (req, res) => {
         isoCode: row.IsoCode
       });
     });
-
+    res.setHeader('X-Data-Source', 'database');
     res.json(data);
   } catch (err) {
-    res.json(getFallbackCountries());
+    return sendFallbackCountries(res, err);
   }
 });
 

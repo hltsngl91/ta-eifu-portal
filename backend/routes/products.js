@@ -40,6 +40,18 @@ const loadFallbackProducts = () => {
   return fallbackProductsCache;
 };
 
+const sendFallbackResponse = (res, data, err, label) => {
+  const reason = err?.message || 'Unknown database error';
+  console.warn(`${label} database unavailable; serving fallback data. Reason: ${reason}`);
+  res.setHeader('X-Data-Source', 'fallback');
+  return res.status(200).json({
+    ok: false,
+    source: 'fallback',
+    error: 'Database unavailable; serving fallback data.',
+    data
+  });
+};
+
 const filterFallbackProducts = ({ category, subcategory, search }) => {
   const normalizedSearch = typeof search === 'string' ? search.trim() : '';
   const searchTerm = (extractRefFromUdi(normalizedSearch) || normalizedSearch).toLowerCase();
@@ -87,9 +99,10 @@ router.get('/', async (req, res) => {
     query += ' ORDER BY [Group], Subcategory, Name';
     
     const result = await request.query(query);
+    res.setHeader('X-Data-Source', 'database');
     res.json(result.recordset);
   } catch (err) {
-    res.json(filterFallbackProducts(req.query));
+    return sendFallbackResponse(res, filterFallbackProducts(req.query), err, 'Products');
   }
 });
 
@@ -98,10 +111,11 @@ router.get('/categories', async (req, res) => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query('SELECT DISTINCT [Group] FROM Products WHERE [Group] IS NOT NULL ORDER BY [Group]');
+    res.setHeader('X-Data-Source', 'database');
     res.json(result.recordset.map(r => r.Group));
   } catch (err) {
     const categories = [...new Set(loadFallbackProducts().map((product) => product.Group).filter(Boolean))].sort();
-    res.json(categories);
+    return sendFallbackResponse(res, categories, err, 'Categories');
   }
 });
 
@@ -119,6 +133,7 @@ router.get('/subcategories', async (req, res) => {
 
     query += ' ORDER BY Subcategory';
     const result = await request.query(query);
+    res.setHeader('X-Data-Source', 'database');
     res.json(result.recordset.map(r => r.Subcategory));
   } catch (err) {
     const { category } = req.query;
@@ -128,7 +143,7 @@ router.get('/subcategories', async (req, res) => {
         .map((product) => product.Subcategory)
         .filter(Boolean)
     )].sort();
-    res.json(subcategories);
+    return sendFallbackResponse(res, subcategories, err, 'Subcategories');
   }
 });
 
