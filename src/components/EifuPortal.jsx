@@ -334,7 +334,7 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
     <div className="relative z-10 flex flex-col min-h-screen container mx-auto px-4 md:px-8 xl:px-12">
         
       {/* Top Header with Naturally Floating Logo and Change Country */}
-      <header className="w-full py-8 flex items-center justify-between">
+      <header className="w-full py-6 md:py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="inline-flex items-center group cursor-pointer hover:-translate-y-0.5 transition-transform duration-500">
           <div
             className="portal-logo-sapphire w-[140px] md:w-[180px] transition-all duration-500"
@@ -343,17 +343,17 @@ const EifuPortal = ({ onChangeCountry, selectedCountry }) => {
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="portal-top-actions flex w-full sm:w-auto items-center justify-center sm:justify-end gap-2 sm:gap-4 flex-wrap">
           <LanguageSelector />
           <button 
             onClick={onChangeCountry}
-            className="glass-panel px-5 py-2.5 rounded-full flex items-center gap-2 hover:bg-white/80 transition-all duration-300 shadow-sm hover:shadow-md group"
+            className="glass-panel max-w-full min-w-0 px-4 sm:px-5 py-2.5 rounded-full flex items-center justify-center gap-2 hover:bg-white/80 transition-all duration-300 shadow-sm hover:shadow-md group"
           >
-            <Globe className="w-5 h-5 text-slate-500 group-hover:text-[#1447d7] transition-colors" />
-            <span className="text-slate-600 font-semibold group-hover:text-slate-800 transition-colors hidden sm:inline">
+            <Globe className="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#1447d7] transition-colors" />
+            <span className="text-slate-600 font-semibold group-hover:text-slate-800 transition-colors hidden sm:inline truncate">
               {selectedCountryName} ({t('Change country')})
             </span>
-            <span className="text-slate-600 font-semibold group-hover:text-slate-800 transition-colors sm:hidden">
+            <span className="text-slate-600 text-sm font-semibold group-hover:text-slate-800 transition-colors sm:hidden truncate max-w-[170px]">
               {t('Change country')}
             </span>
           </button>

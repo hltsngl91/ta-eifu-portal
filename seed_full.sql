@@ -138,7 +138,7 @@ INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUE
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'Tajikistan', 'TJ', N'🇹🇯', 42);
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'Thailand', 'TH', N'🇹🇭', 43);
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'Timor-Leste', 'TL', N'🇹🇱', 44);
-INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'Türkiye', 'TR', N'🇹🇷', 45);
+INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Europe'), N'Türkiye', 'TR', N'🇹🇷', 26);
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'Turkmenistan', 'TM', N'🇹🇲', 46);
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'United Arab Emirates', 'AE', N'🇦🇪', 47);
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Asia'), N'Uzbekistan', 'UZ', N'🇺🇿', 48);
@@ -289,4 +289,3 @@ INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUE
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Oceania'), N'Vanuatu', 'VU', N'🇻🇺', 26);
 INSERT INTO Countries (ContinentId, NameEn, IsoCode, FlagEmoji, SortOrder) VALUES ((SELECT Id FROM Continents WHERE NameEn = 'Oceania'), N'Wallis and Futuna', 'WF', N'🇼🇫', 27);
 GO
-

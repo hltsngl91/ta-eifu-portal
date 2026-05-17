@@ -7,6 +7,10 @@ const router = express.Router();
 const continentOrder = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
 
 const regionForCountry = (country) => {
+  if (country.cca2 === 'TR') {
+    return 'Europe';
+  }
+
   if (country.region === 'Americas') {
     return country.subregion === 'South America' ? 'South America' : 'North America';
   }
@@ -75,13 +79,15 @@ router.get('/', async (req, res) => {
       WHERE c.IsActive = 1
       ORDER BY con.SortOrder, c.SortOrder
     `);
-    
+
     const data = {};
     result.recordset.forEach(row => {
-      if (!data[row.ContinentName]) {
-        data[row.ContinentName] = [];
+      const continentName = row.IsoCode === 'TR' ? 'Europe' : row.ContinentName;
+
+      if (!data[continentName]) {
+        data[continentName] = [];
       }
-      data[row.ContinentName].push({
+      data[continentName].push({
         id: row.Id,
         name: row.CountryName,
         flag: row.FlagEmoji,

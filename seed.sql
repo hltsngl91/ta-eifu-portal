@@ -55,7 +55,6 @@ INSERT INTO Countries (ContinentId, NameEn, FlagEmoji, SortOrder) VALUES
 
 -- Seed Asia
 INSERT INTO Countries (ContinentId, NameEn, FlagEmoji, SortOrder) VALUES
-(@AsiaId, 'Türkiye', N'🇹🇷', 1),
 (@AsiaId, 'Iran', N'🇮🇷', 2),
 (@AsiaId, 'Jordan', N'🇯🇴', 3),
 (@AsiaId, 'Saudi Arabia', N'🇸🇦', 4),
