@@ -13,7 +13,18 @@ async function seed() {
     const pool = await poolPromise;
 
     await pool.request().query(`
-      IF COL_LENGTH('Products', 'Subcategory') IS NULL
+      IF OBJECT_ID('Products', 'U') IS NULL
+      BEGIN
+        CREATE TABLE Products (
+          Id INT NOT NULL PRIMARY KEY,
+          Ref NVARCHAR(100) NOT NULL,
+          [Group] NVARCHAR(150) NOT NULL,
+          Subcategory NVARCHAR(150) NULL,
+          Name NVARCHAR(255) NOT NULL,
+          Platform NVARCHAR(100) NULL
+        )
+      END
+      ELSE IF COL_LENGTH('Products', 'Subcategory') IS NULL
       BEGIN
         ALTER TABLE Products ADD Subcategory NVARCHAR(150) NULL
       END
